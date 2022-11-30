@@ -1,3 +1,5 @@
+#!
+
 import { readFile, writeFile } from "node:fs/promises";
 
 const subcommand = process.argv[2];
@@ -30,13 +32,57 @@ if (subcommand === "read"){
       pets.push(newPet);
       writeFile("./pets.json", JSON.stringify(pets), (error) =>{
         if (error) {
-          console.log('Something went wrong');
+          console.log('Something went wrong.');
         } else {
-          console.log('done')
+          console.log('Pet recorded in our database.')
         }
       })
     })
-  };
+  }
+
+//================================================ update subcommand ==================================================================================
+  } else if (subcommand === "update"){
+    const index = process.argv[3];
+    const age = process.argv[4];
+    const kind = process.argv[5];
+    const name = process.argv[6];
+
+    if (index === undefined || age === undefined || kind === undefined || name === undefined){
+      console.log('Please enter all four arguments: index, age, kind, name (separated by a space for each)');
+    } else{
+      readFile("./pets.json","utf-8").then((text)=>{
+        const pets = JSON.parse(text);
+        const updatedPet = {age, kind, name};
+        pets[index]= updatedPet;
+        writeFile("./pets.json", JSON.stringify(pets), (error) =>{
+          if (error) {
+            console.log('Something went wrong.');
+          } else {
+            console.log(`Updated pet at: ${index}`)
+          }
+        })
+      })
+    }
+
+//================================================ update subcommand ==================================================================================
+} else if (subcommand === "destroy"){
+  const index = process.argv[3];
+
+  if (index === undefined){
+    console.log('Please enter the index you want to remove the record of');
+  } else{
+    readFile("./pets.json","utf-8").then((text)=>{
+      const pets = JSON.parse(text);
+      pets.splice(index, 1);
+      writeFile("./pets.json", JSON.stringify(pets), (error) =>{
+        if (error) {
+          console.log('Something went wrong.');
+        } else {
+          console.log(`Removed pet at index: ${index}`)
+        }
+      })
+    })
+  }
 
 //================================================ no commands ========================================================================================
 } else{
