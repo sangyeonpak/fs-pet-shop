@@ -1,5 +1,5 @@
 import http from "node:http";
-import { readFile } from "node:fs/promises"
+import { readFile, writeFile } from "node:fs/promises"
 
 const server = http.createServer((req, res) => {
   const petRegExp = /^\/pets\/(.*)$/;
@@ -13,7 +13,7 @@ const server = http.createServer((req, res) => {
       res.end(text);
     })
 
-//=========================================================== /pets/index =============================================================================
+//=========================================================== /pets/ (notice the forward slash) =======================================================
 
   } else if (req.method === "GET" && (req.url).startsWith("/pets/")){
     let index = (req.url).substring(6);
@@ -46,13 +46,64 @@ const server = http.createServer((req, res) => {
       res.end("Not Found");
     }
 
+//=========================================================== POST ====================================================================================
+  } else if (req.method === "POST" && (req.url).startsWith("/pets")){
+    const url = req.url;
+
+
+    // if POST and has all three
+    if (url.includes("age=") && url.includes("kind=") && url.includes("name")){
+      const ageStart = (url.indexOf("age=")+4);
+      const kindStart = (url.indexOf("kind=")+5);
+      const nameStart = (url.indexOf("name=")+5);
+      // console.log(url[ageStart])
+      // console.log(url[kindStart])
+      // console.log(url[nameStart])
+
+      const ageEnd = (url.indexOf("%20kind="));
+      const kindEnd = (url.indexOf("%20name="));
+      const nameEnd = (url.length);
+      // console.log(url[ageEnd])
+      // console.log(url[kindEnd])
+      // console.log(url[nameEnd])
+
+      const ageInput = Number(url.substring(ageStart, ageEnd));
+      // console.log('age:',ageInput);
+      const kindInput = url.substring(kindStart, kindEnd);
+      // console.log('kind:', kindInput);
+      const nameInput = url.substring(nameStart, nameEnd);
+      // console.log('name:', nameInput);
+
+
+    readFile("./pets.json", "utf-8").then((text) =>{
+      res.setHeader("Content-Type", "application/json");
+      const petsParsed = JSON.parse(text);
+      petsParsed.push({
+        'age': ageInput,
+        'kind' : kindInput,
+        'name' : nameInput
+    });
+      writeFile("./pets.json", JSON.stringify(petsParsed)).then((error) =>{
+        if (error) {
+          console.log('Something went wrong: ', error);
+        } else {
+          console.log('Pet recorded in our database.')
+        }
+        res.statusCode = 200;
+        res.end(`{'age': ${ageInput},'kind' : ${kindInput},'name' : ${nameInput}}`)
+      })
+    })
+  }
+
+
 //=========================================================== anything else ===========================================================================
   } else{
     res.setHeader("Content-Type", "text/plain");
     res.statusCode = 404;
     res.end("Not Found");
   }
-})
+}
+)
 server.listen(3000, () => {
   console.log("Server running on port 3000");
 })
