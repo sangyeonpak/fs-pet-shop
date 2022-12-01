@@ -1,4 +1,4 @@
-#!
+#!/usr/bin/env node
 
 import { readFile, writeFile } from "node:fs/promises";
 
@@ -15,6 +15,9 @@ if (subcommand === "read"){
     } else{
       console.log(pets[petIndex]);
     }
+  })
+  .catch((e) => {
+    console.error("Could not find pets.json. Does it exist?");
   });
 
 //====================================================== create subcommand ============================================================================
@@ -30,9 +33,9 @@ if (subcommand === "read"){
     readFile("./pets.json","utf-8").then((text)=>{
       const pets = JSON.parse(text);
       pets.push(newPet);
-      writeFile("./pets.json", JSON.stringify(pets), (error) =>{
+      writeFile("./pets.json", JSON.stringify(pets)).then((error) =>{
         if (error) {
-          console.log('Something went wrong.');
+          console.log('Something went wrong: ', error);
         } else {
           console.log('Pet recorded in our database.')
         }
@@ -54,9 +57,9 @@ if (subcommand === "read"){
         const pets = JSON.parse(text);
         const updatedPet = {age, kind, name};
         pets[index]= updatedPet;
-        writeFile("./pets.json", JSON.stringify(pets), (error) =>{
+        writeFile("./pets.json", JSON.stringify(pets)).then((error) =>{
           if (error) {
-            console.log('Something went wrong.');
+            console.log('Something went wrong: ', error);
           } else {
             console.log(`Updated pet at: ${index}`)
           }
@@ -64,7 +67,7 @@ if (subcommand === "read"){
       })
     }
 
-//================================================ update subcommand ==================================================================================
+//================================================ destroy subcommand ==================================================================================
 } else if (subcommand === "destroy"){
   const index = process.argv[3];
 
@@ -74,9 +77,9 @@ if (subcommand === "read"){
     readFile("./pets.json","utf-8").then((text)=>{
       const pets = JSON.parse(text);
       pets.splice(index, 1);
-      writeFile("./pets.json", JSON.stringify(pets), (error) =>{
+      writeFile("./pets.json", JSON.stringify(pets)).then((error) =>{
         if (error) {
-          console.log('Something went wrong.');
+          console.log('Something went wrong: ', error);
         } else {
           console.log(`Removed pet at index: ${index}`)
         }
