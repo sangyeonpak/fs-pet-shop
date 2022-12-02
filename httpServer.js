@@ -60,39 +60,45 @@ const server = http.createServer((req, res) => {
       // console.log(url[kindStart])
       // console.log(url[nameStart])
 
-      const ageEnd = (url.indexOf("%20kind="));
-      const kindEnd = (url.indexOf("%20name="));
-      const nameEnd = (url.length);
-      // console.log(url[ageEnd])
-      // console.log(url[kindEnd])
-      // console.log(url[nameEnd])
+      if (ageStart === -1 || kindStart === -1 || nameStart === -1){
+        res.setHeader("Content-Type", "text/plain");
+        res.statusCode = 404;
+        res.end(`Not Found`)
+      } else{
+        const ageEnd = (url.indexOf("%20kind="));
+        const kindEnd = (url.indexOf("%20name="));
+        const nameEnd = (url.length);
+        // console.log(url[ageEnd])
+        // console.log(url[kindEnd])
+        // console.log(url[nameEnd])
 
-      const ageInput = Number(url.substring(ageStart, ageEnd));
-      // console.log('age:',ageInput);
-      const kindInput = url.substring(kindStart, kindEnd);
-      // console.log('kind:', kindInput);
-      const nameInput = url.substring(nameStart, nameEnd);
-      // console.log('name:', nameInput);
+        const ageInput = Number(url.substring(ageStart, ageEnd));
+        // console.log('age:',ageInput);
+        const kindInput = url.substring(kindStart, kindEnd);
+        // console.log('kind:', kindInput);
+        const nameInput = url.substring(nameStart, nameEnd);
+        // console.log('name:', nameInput);
 
 
-    readFile("./pets.json", "utf-8").then((text) =>{
-      res.setHeader("Content-Type", "application/json");
-      const petsParsed = JSON.parse(text);
-      petsParsed.push({
-        'age': ageInput,
-        'kind' : kindInput,
-        'name' : nameInput
-    });
-      writeFile("./pets.json", JSON.stringify(petsParsed)).then((error) =>{
-        if (error) {
-          console.log('Something went wrong: ', error);
-        } else {
-          console.log('Pet recorded in our database.')
-        }
-        res.statusCode = 200;
-        res.end(`{'age': ${ageInput},'kind' : ${kindInput},'name' : ${nameInput}}`)
+      readFile("./pets.json", "utf-8").then((text) =>{
+        res.setHeader("Content-Type", "application/json");
+        const petsParsed = JSON.parse(text);
+        petsParsed.push({
+          'age': ageInput,
+          'kind' : kindInput,
+          'name' : nameInput
+      });
+        writeFile("./pets.json", JSON.stringify(petsParsed)).then((error) =>{
+          if (error) {
+            console.log('Something went wrong: ', error);
+          } else {
+            console.log('Pet recorded in our database.')
+          }
+          res.statusCode = 200;
+          res.end(`{'age': ${ageInput},'kind' : ${kindInput},'name' : ${nameInput}}`)
+        })
       })
-    })
+    }
   }
 
 
