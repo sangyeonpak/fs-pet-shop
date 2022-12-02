@@ -36,17 +36,11 @@ server.post("/pets%20:info", (req, res) => {
   c(info);
   const infoSep = (info.split(' '));
   c(infoSep);
-  const pet = {};
   for (let i = 0; i<3; i++){
     infoSep[i] = infoSep[i].split('=');
   }
-  c(infoSep);
-  for (let i = 0; i < 3; i++){
-    if (pet.infoSep[i][0] === undefined){
-      console.log(pet);
-      pet.infoSep[i][0] = infoSep[i][1];
-    }
-  }
+  const pet = Object.fromEntries(infoSep);
+  c(pet);
   // c(infoSep);
   // const pet = { 'age':Number(age), 'kind':kind, 'name':name };
   // console.log(pet);
