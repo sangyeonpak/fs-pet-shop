@@ -9,10 +9,6 @@ function c(x) { console.log(x)}; // robin's console.log shortcut
 server.use(express.json());
 server.use(morgan('tiny'));
 
-server.get("/", (req, res) => {
-  res.status(404).send("Not Found")
-});
-
 server.get("/pets", (req, res) => {
   readFile("./pets.json", "utf-8").then((text)=>{
     // res.set("Content-Type", "application/json");
@@ -42,9 +38,6 @@ server.post("/pets", (req, res) => {
       pet.age = Number(pet.age);
       if (isNaN(pet.age) || pet.age === '' || pet.kind === '' || pet.name === ''){ // FAIL: see else statement; wonder why pet.age === NaN didn't work
         res.status(400).send("Bad request, noob")
-
-
-
       } else{ // PASS: age is not NAN, age is not blank, kind is not blank, or name is not blank
         readFile("./pets.json", "utf-8").then((text)=>{
           const pets = JSON.parse(text);
@@ -89,12 +82,15 @@ server.delete("/pets/:index", (req, res) =>{
     let pets = JSON.parse(text);
     let deletedPet = pets[index]
     pets[index] = undefined;
-    console.log(pets);
     writeFile("./pets.json", JSON.stringify(pets)).then((error)=>{
-      error ? c("Something went wrong: ", error) : c('Deleted in our database.');
+      error ? c("Something went wrong: ", error) : c('Deleted from our database.');
       res.status(200).send(deletedPet);
     })
   })
+})
+
+server.all('*', (req, res)=>{
+  res.status(404).send("Bad request bro")
 })
 
 server.listen(port, ()=>{
