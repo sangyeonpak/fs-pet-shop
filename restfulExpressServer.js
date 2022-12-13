@@ -1,7 +1,9 @@
 import express from "express";
 import { readFile, writeFile } from "node:fs/promises";
 import morgan from "morgan";
+import postgres from "postgres";
 
+const sql = postgrase({ database: "petshop"});
 const server = express();
 const port = 3000;
 function c(x) { console.log(x)}; // robin's console.log shortcut
